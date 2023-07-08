@@ -1,6 +1,14 @@
-﻿namespace WebApplication1.DAL
+﻿using Microsoft.EntityFrameworkCore;
+using WebApplication1.Models;
+
+namespace WebApplication1.DAL
 {
-    public class AppDbContext
+    public class AppDbContext : DbContext
     {
+        public AppDbContext(DbContextOptions options) : base(options)
+        {
+        }
+
+        public DbSet<Product>  Products { get; set; }
     }
 }
