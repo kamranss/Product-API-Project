@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.DAL;
 using WebApplication1.Dtos.Product;
+using WebApplication1.Migrations;
 using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
@@ -26,13 +27,41 @@ namespace WebApplication1.Controllers
             {
                 return NotFound();
             }
-            return StatusCode(200, product);
+            ProductReturnDto productReturnDto = new ProductReturnDto()
+            {
+                Name = product.Name,
+                Description = product.Description,
+                SalePrice = product.SalePrice,
+                CostPrice = product.CostPrice,
+                CreationDate = product.CreationDate,
+            };
+            return StatusCode(200, productReturnDto);
         }
         [HttpGet("products")]
         public IActionResult GetAll()
         {
-            var products = _appDbContext.Products.Where(p => p.IsDeleted== false|| p.IsDeleted==null).ToList();
-            return StatusCode(StatusCodes.Status200OK, products);
+           
+            var query = _appDbContext.Products.Where(p => p.IsDeleted==false || p.IsDeleted == null);
+            List<ProductListItemDto> listProducts = new List<ProductListItemDto>();
+            foreach (var item in query.ToList())
+            {
+                ProductListItemDto itemDto = new ProductListItemDto()
+                {
+                    Name = item.Name,
+                    Description = item.Description,
+                    SalePrice = item.SalePrice,
+                    CostPrice = item.CostPrice,
+                    CreationDate = item.CreationDate,
+                    ModifiedDate = item.ModifiedDate,
+                };
+                listProducts.Add(itemDto);
+            }
+            var proList = new ProductListDto()
+            {
+                TotalCount = query.Count(),
+                Items = listProducts
+            };
+            return StatusCode(StatusCodes.Status200OK, proList);
         }
 
         [HttpPost("newproduct")]
@@ -73,7 +102,7 @@ namespace WebApplication1.Controllers
             return NoContent();
         }
 
-        [Route("{id}")]
+        [Route("isdelete/{id}")]
         [HttpPatch]
         public IActionResult Delete(int id, bool isDelete)
         {
