@@ -18,6 +18,8 @@ namespace WebApplication1.DAL
         {
             modelBuilder.ApplyConfiguration(new ProductConfiguration()); // applying Db validation here  -- this is mainly same as data anotation validation
             base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

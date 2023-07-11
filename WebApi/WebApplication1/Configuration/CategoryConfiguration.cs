@@ -10,7 +10,7 @@ namespace WebApplication1.Configuration
 
         public void Configure(EntityTypeBuilder<Category> builder)
         {
-            throw new NotImplementedException();
+            builder.Property(p => p.Name).IsRequired(true).HasMaxLength(50);
         }
     }
 }

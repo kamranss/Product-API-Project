@@ -12,8 +12,8 @@ using WebApplication1.DAL;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230711182942_Category")]
-    partial class Category
+    [Migration("20230711194601_categornew")]
+    partial class categornew
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -48,7 +48,9 @@ namespace WebApplication1.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -75,7 +77,7 @@ namespace WebApplication1.Migrations
                     b.Property<DateTime?>("CreationDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 7, 11, 18, 29, 42, 525, DateTimeKind.Utc).AddTicks(3519));
+                        .HasDefaultValue(new DateTime(2023, 7, 11, 19, 46, 1, 368, DateTimeKind.Utc).AddTicks(9948));
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -94,9 +96,8 @@ namespace WebApplication1.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<double?>("SalePrice")
-                        .IsRequired()
-                        .HasColumnType("float");
+                    b.Property<decimal>("SalePrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
