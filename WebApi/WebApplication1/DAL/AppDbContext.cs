@@ -15,7 +15,7 @@ namespace WebApplication1.DAL
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new ProductConfiguration()); // applying Db validation here
+            modelBuilder.ApplyConfiguration(new ProductConfiguration()); // applying Db validation here  -- this is mainly same as data anotation validation
             base.OnModelCreating(modelBuilder);
         }
     }

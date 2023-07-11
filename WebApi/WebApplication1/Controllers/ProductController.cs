@@ -20,9 +20,9 @@ namespace WebApplication1.Controllers
 
         [Route("productbyid/{id}")]
         [HttpGet]
-        public IActionResult Get(int Id)
+        public IActionResult Get(int? id)
         {
-            var product = _appDbContext.Products.FirstOrDefault(p => p.Id == Id&& p.IsDeleted == false || p.IsDeleted == null);
+            var product = _appDbContext.Products.FirstOrDefault(p => p.Id == id&& p.IsDeleted == false || p.IsDeleted == null);
             if (product==null)
             {
                 return NotFound();
@@ -38,10 +38,23 @@ namespace WebApplication1.Controllers
             return StatusCode(200, productReturnDto);
         }
         [HttpGet("products")]
-        public IActionResult GetAll()
+        public IActionResult GetAll(string? search, int take=2)
         {
-           
+
+            int ourTake=2;
+            if (take != null)
+            {
+                ourTake = take;
+            }
+            else
+            {
+                take = 2;
+            };
             var query = _appDbContext.Products.Where(p => p.IsDeleted==false || p.IsDeleted == null);
+            if (!string.IsNullOrEmpty(search))
+            {
+                query.Where(p => p.Name.ToLower().Contains(search.ToLower())).Take(ourTake);
+            }
             List<ProductListItemDto> listProducts = new List<ProductListItemDto>();
             foreach (var item in query.ToList())
             {
@@ -61,6 +74,16 @@ namespace WebApplication1.Controllers
                 TotalCount = query.Count(),
                 Items = listProducts
             };
+
+            // another approach for retrieving data from query
+            //var proListt = new ProductListDto()
+            //{
+            //    TotalCount = query.Count(),
+            //    Items = query.Select(p => new ProductListItemDto
+            //    {
+            //        Name = p.Name
+            //    }).ToList()
+            //};
             return StatusCode(StatusCodes.Status200OK, proList);
         }
 
@@ -81,12 +104,15 @@ namespace WebApplication1.Controllers
                
         }
 
-        [HttpPut]
-        public IActionResult Update(ProductCreateDto product)
+       
+        [HttpPut("modproduct")]
+        public IActionResult Update(ProductUpdateDto product)
         {
             var existProduct = _appDbContext.Products.FirstOrDefault(p => p.Id == product.id);
             existProduct.Name = product.Name;
             existProduct.Description = product.Description;
+            existProduct.CostPrice = product.CostPrice;
+            existProduct.SalePrice = product.SalePrice;
             existProduct.ModifiedDate = DateTime.Now;
             _appDbContext.SaveChanges();
             return StatusCode(200, product);

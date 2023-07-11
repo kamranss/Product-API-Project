@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication1.Dtos.Product
 {
-    public class ProductCreateDto
+    public class ProductUpdateDto
     {
-        //public int id { get; set; }
+        public int id { get; set; }
 
         [StringLength(10)]
         public string? Name { get; set; }
@@ -15,14 +15,13 @@ namespace WebApplication1.Dtos.Product
         public DateTime? CreationDate { get; set; }
     }
 
-
-    public class ProductCreateDtoValiidator : AbstractValidator<ProductUpdateDto>
+    public class ProductUpdateDtoValiidator : AbstractValidator<ProductUpdateDto>
     {
-        public ProductCreateDtoValiidator()
+        public ProductUpdateDtoValiidator()
         {
             RuleFor(p => p.Name)
-                .NotEmpty().WithMessage("Not leave empty")
-                .MaximumLength(20).WithMessage("Max lenght should be 20");
+               .NotEmpty().WithMessage("Not leave empty")
+               .MaximumLength(20).WithMessage("Max lenght should be 20");
 
             RuleFor(p => p.Description)
                 .NotEmpty().WithMessage("Can not be null")
@@ -44,7 +43,6 @@ namespace WebApplication1.Dtos.Product
                     context.AddFailure("CostPrice", "CostPrice cannot be greater than SalePrice");
                 }
             });
-            
         }
     }
 }
