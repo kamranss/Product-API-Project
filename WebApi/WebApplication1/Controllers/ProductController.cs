@@ -38,18 +38,11 @@ namespace WebApplication1.Controllers
             return StatusCode(200, productReturnDto);
         }
         [HttpGet("products")]
-        public IActionResult GetAll(string? search, int take=2)
+        public IActionResult GetAll(string? search, int? take=2)
         {
 
-            int ourTake=2;
-            if (take != null)
-            {
-                ourTake = take;
-            }
-            else
-            {
-                take = 2;
-            };
+            int ourTake = take ?? 2;
+
             var query = _appDbContext.Products.Where(p => p.IsDeleted==false || p.IsDeleted == null);
             if (!string.IsNullOrEmpty(search))
             {
@@ -133,7 +126,7 @@ namespace WebApplication1.Controllers
         public IActionResult Delete(int id, bool isDelete)
         {
             var existProduct = _appDbContext.Products.FirstOrDefault(p => p.Id == id);
-            if (existProduct != null) return NotFound();
+            if (existProduct == null) return NotFound();
             existProduct.IsDeleted = isDelete; 
             _appDbContext.SaveChanges();
             return NoContent();
