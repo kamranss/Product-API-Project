@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebApplication1.DAL;
 using WebApplication1.Dtos.Product;
 using WebApplication1.Migrations;
 using WebApplication1.Models;
+using static WebApplication1.Dtos.Product.ProductReturnDto;
 
 namespace WebApplication1.Controllers
 {
@@ -22,7 +24,10 @@ namespace WebApplication1.Controllers
         [HttpGet]
         public IActionResult Get(int? id)   
         {
-            var product = _appDbContext.Products.FirstOrDefault(p => p.Id == id&& p.IsDeleted == false || p.IsDeleted == null);
+            var product = _appDbContext.Products
+                .Include(p => p.Category)
+                .ThenInclude(c => c.Products)
+                .FirstOrDefault(p => p.Id == id&& p.IsDeleted == false || p.IsDeleted == null);
             if (product==null)
             {
                 return NotFound();
@@ -34,6 +39,13 @@ namespace WebApplication1.Controllers
                 SalePrice = product.SalePrice,
                 CostPrice = product.CostPrice,
                 CreationDate = product.CreationDate,
+                Category = new categoryInProductReturnDto
+                {
+                    Name = product.Category.Name,
+                    Description = product.Category.Description,
+                    ImageUrl = product.Category.ImagUrl,
+                    ProductCount = product.Category.Products.Count()
+                }
             };
             return StatusCode(200, productReturnDto);
         }
@@ -113,6 +125,7 @@ namespace WebApplication1.Controllers
             existProduct.Description = product.Description;
             existProduct.CostPrice = product.CostPrice;
             existProduct.SalePrice = product.SalePrice;
+            existProduct.CategoryId = product.CatecoryId;
             existProduct.ModifiedDate = DateTime.Now;
             _appDbContext.SaveChanges();
             return StatusCode(200, product);

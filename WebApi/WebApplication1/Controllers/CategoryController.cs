@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.DAL;
 using WebApplication1.Dtos.Category;
+using WebApplication1.Helper.FileExten;
 using WebApplication1.Migrations;
 using WebApplication1.Models;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace WebApplication1.Controllers
 {
@@ -11,11 +14,13 @@ namespace WebApplication1.Controllers
     //[ApiController]
     public class CategoryController : BaseController
     {
+        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly AppDbContext _appDbContext;
 
-        public CategoryController(AppDbContext appDbContext)
+        public CategoryController(AppDbContext appDbContext, IWebHostEnvironment webHostEnvironment)
         {
             _appDbContext = appDbContext;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [Route("categorybyid/{id}")]
@@ -45,10 +50,14 @@ namespace WebApplication1.Controllers
 
         [Route("newcategory")]
         [HttpPost]
-        public IActionResult Create(CategoryCreateDto category)
+        public IActionResult Create([FromForm]CategoryCreateDto category)
         {
             var existCategory = _appDbContext.Categories.FirstOrDefault(c => c.Name.ToLower() == category.Name.ToLower());
-     
+
+            if (!category.Image.CheckFileType()) return Conflict("File Type is not correct");
+
+            if (category.Image.CheckFileLenght(1000)) return Conflict("File Size is bigger");
+
             if (existCategory != null)
             {
                 return Conflict($"Category with the same {existCategory.Name} name already exist");
@@ -60,11 +69,15 @@ namespace WebApplication1.Controllers
                 CreationDate = DateTime.Now
             };
             //_appDbContext.Categories.Add(new Category { Name = category.Name, Description = category.Description}) ; // another approach
+
+            newCategory.ImagUrl = category.Image.SaveFile(_webHostEnvironment, "images/category");
+       
+           
             _appDbContext.Categories.Add(newCategory);
             _appDbContext.SaveChanges();
             return StatusCode(201, category);
 
-        }
+        } // the params within method comes from body
 
 
         [Route("delete/{id}")]

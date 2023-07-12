@@ -65,3 +65,4 @@ C:\Users\user\Desktop\BackEnd\WebApi\WebApi\WebApplication1\obj\Debug\net6.0\ref
 C:\Users\user\Desktop\BackEnd\WebApi\WebApi\WebApplication1\obj\Debug\net6.0\WebApplication1.pdb
 C:\Users\user\Desktop\BackEnd\WebApi\WebApi\WebApplication1\obj\Debug\net6.0\WebApplication1.genruntimeconfig.cache
 C:\Users\user\Desktop\BackEnd\WebApi\WebApi\WebApplication1\obj\Debug\net6.0\ref\WebApplication1.dll
+C:\Users\user\Desktop\BackEnd\WebApi\WebApi\WebApplication1\bin\Debug\net6.0\WebApplication1.staticwebassets.runtime.json
