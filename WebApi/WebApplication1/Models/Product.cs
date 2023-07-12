@@ -13,6 +13,7 @@
         public int? CategoryId { get; set; }
         public int? CreatedbyId { get; set; }
         public int? ModifiedById { get; set; }
+
         public Category Category { get; set; }
     }
 }

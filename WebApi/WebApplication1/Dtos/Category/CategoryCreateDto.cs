@@ -10,14 +10,15 @@ namespace WebApplication1.Dtos.Category
         [StringLength(10)]
         public string? Name { get; set; }
         public string? Description { get; set; }
+        public IFormFile Image { get; set; }
 
 
-        public class CategoryCreateDtoValiidator : AbstractValidator<ProductUpdateDto>
+        public class CategoryCreateDtoValiidator : AbstractValidator<CategoryCreateDto>
         {
             public CategoryCreateDtoValiidator()
             {
                 RuleFor(c => c.Name)
-                    .NotEmpty().WithMessage("Not leave empty")
+                    .NotEmpty().WithMessage("Not leave empty") // same as reguired anotation
                     .MaximumLength(20).WithMessage("Max lenght should be 20");
 
                 RuleFor(c => c.Description)

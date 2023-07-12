@@ -22,12 +22,20 @@ namespace WebApplication1.Controllers
         [HttpGet]
         public IActionResult GetCategory(int? id)
         {
-           var Category = _appDbContext.Categories.FirstOrDefault(c => c.Id == id);
-            if (Category == null) { return NotFound(); }
-            return Ok(Category);
+           var category = _appDbContext.Categories.FirstOrDefault(c => c.Id == id);
+       
+            if (category == null) { return NotFound(); }
+
+            CategoryReturnDto categoryreturnDto = new CategoryReturnDto()
+            {
+                Name = category.Name,
+                Description = category.Description,
+
+            };
+            return Ok(categoryreturnDto);
         }
 
-        [Route("allcategories/{id}")]
+        [Route("allcategories")]
         [HttpGet]
         public IActionResult GetCategories()
         {

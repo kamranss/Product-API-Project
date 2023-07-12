@@ -9,6 +9,7 @@
         public DateTime? ModifiedDate { get; set; }
         public int? CreatedbyId { get; set; }
         public int? ModifiedById { get; set; }
+        public string ImagUrl { get; set; }
 
         public List<Product> Products { get; set; }
     }

@@ -13,6 +13,9 @@ namespace WebApplication1.Dtos.Product
         public double? SalePrice { get; set; }
         public double? CostPrice { get; set; }
         public DateTime? CreationDate { get; set; }
+
+        [Required]
+        public int CategoryId { get; set; }
     }
 
 

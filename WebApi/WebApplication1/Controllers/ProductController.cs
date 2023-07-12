@@ -20,7 +20,7 @@ namespace WebApplication1.Controllers
 
         [Route("productbyid/{id}")]
         [HttpGet]
-        public IActionResult Get(int? id)
+        public IActionResult Get(int? id)   
         {
             var product = _appDbContext.Products.FirstOrDefault(p => p.Id == id&& p.IsDeleted == false || p.IsDeleted == null);
             if (product==null)
@@ -83,13 +83,20 @@ namespace WebApplication1.Controllers
         [HttpPost("newproduct")]
         public IActionResult Create(ProductCreateDto product)
         {
-            product.CreationDate = DateTime.Now;
+            var existCategory = _appDbContext.Categories.Where(c => c.Id == product.CategoryId).FirstOrDefault();
+            if (existCategory ==null)
+            {
+                return Conflict("the procided category not exist in db");
+            }
+            
             Product newProduct = new Product()
             {
                 Name = product.Name,
                 Description = product.Description,
                 CostPrice = product.CostPrice,
                 SalePrice = product.SalePrice,
+                CategoryId = product.CategoryId,
+                CreationDate = DateTime.Now
             };
             _appDbContext.Products.Add(newProduct);
             _appDbContext.SaveChanges();
