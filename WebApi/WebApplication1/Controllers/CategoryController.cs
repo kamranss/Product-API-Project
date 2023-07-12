@@ -35,49 +35,64 @@ namespace WebApplication1.Controllers
             return Ok(Categories);
         }
 
-
-        [HttpPost("newcategory")]
+        [Route("newcategory")]
+        [HttpPost]
         public IActionResult Create(CategoryCreateDto category)
         {
-            var existCategory = _appDbContext.Categories.FirstOrDefault(c => c.Name == category.Name);
+            var existCategory = _appDbContext.Categories.FirstOrDefault(c => c.Name.ToLower() == category.Name.ToLower());
+     
             if (existCategory != null)
             {
-                return BadRequest(existCategory.Name);
+                return Conflict($"Category with the same {existCategory.Name} name already exist");
             }
             Category newCategory = new Category()
             {
                 Name = category.Name,
                 Description = category.Description,
+                CreationDate = DateTime.Now
             };
-            newCategory.CreationDate = DateTime.Now;
+            //_appDbContext.Categories.Add(new Category { Name = category.Name, Description = category.Description}) ; // another approach
             _appDbContext.Categories.Add(newCategory);
             _appDbContext.SaveChanges();
-            return StatusCode(200, category);
+            return StatusCode(201, category);
 
         }
 
 
-        //[HttpPut("modcategory")]
-        //public IActionResult Update(CAtegoryUpdateDto category)
-        //{
-        //    var existCategory = _appDbContext.Categories.FirstOrDefault(p => p.Id == category.id);
-        //    existCategory.Name = category.Name;
-        //    existCategory.Description = category.Description;
-        //    existCategory.ModifiedDate = DateTime.Now;
-        //    _appDbContext.SaveChanges();
-        //    return StatusCode(200, category);
-        //}
+        [Route("delete/{id}")]
+        [HttpDelete]
+        public IActionResult Delete(int id)
+        {
+            var existCategory = _appDbContext.Categories.FirstOrDefault(p => p.Id == id);
+            if (existCategory == null) return NotFound();
+            _appDbContext.Remove(existCategory);
+            _appDbContext.SaveChanges();
+            return NoContent();
+        }
 
-        //[Route("{id}")]
-        //[HttpDelete]
-        //public IActionResult Delete(int id)
-        //{
-        //    var existCategory = _appDbContext.Categories.FirstOrDefault(p => p.Id == id);
-        //    if (existCategory == null) return NotFound();
-        //    _appDbContext.Remove(existCategory);
-        //    _appDbContext.SaveChanges();
-        //    return NoContent();
-        //}
+
+        [Route("modcategory/{id}")]
+        [HttpPut]
+        public IActionResult Update(int id, CategoryUpdateDto category)
+        {
+            var existCategory = _appDbContext.Categories.FirstOrDefault(p => p.Id == id);
+            if (existCategory == null) { return BadRequest(); };
+
+            if (existCategory.Name == category.Name)
+            {
+               return Conflict($"Category with the same  name {existCategory.Name} already exist");
+            }
+            if (_appDbContext.Categories.Any(c => c.Name.ToLower() == category.Name.ToLower() && c.Id== existCategory.Id))
+            {
+                return BadRequest();
+            }
+            existCategory.Name = category.Name;
+            existCategory.Description = category.Description;
+            existCategory.ModifiedDate = DateTime.Now;
+            _appDbContext.SaveChanges();
+            return StatusCode(200, category);
+        }
+
 
         //[Route("isdelete/{id}")]
         //[HttpPatch]

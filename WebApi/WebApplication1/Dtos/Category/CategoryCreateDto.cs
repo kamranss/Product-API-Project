@@ -10,7 +10,6 @@ namespace WebApplication1.Dtos.Category
         [StringLength(10)]
         public string? Name { get; set; }
         public string? Description { get; set; }
-        public DateTime? CreationDate { get; set; }
 
 
         public class CategoryCreateDtoValiidator : AbstractValidator<ProductUpdateDto>
