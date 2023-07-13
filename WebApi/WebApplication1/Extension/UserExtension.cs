@@ -2,9 +2,9 @@
 {
     public static class UserExtension
     {
-        public static int BirthdayToAge( DateTime date)
+        public static int BirthdayToAge( this DateTime date) // extending method to datatime
         {
-            int age = 0;
+            int age = DateTime.Now.Year - date.Year;
             return age;
         }
     }

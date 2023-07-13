@@ -2,5 +2,8 @@
 {
     public class AppUser
     {
+        public DateTime BirthDay { get; set; }
     }
+
+
 }
