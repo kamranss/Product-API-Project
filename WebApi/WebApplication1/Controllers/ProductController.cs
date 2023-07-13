@@ -27,24 +27,24 @@ namespace WebApplication1.Controllers
             var product = _appDbContext.Products
                 .Include(p => p.Category)
                 .ThenInclude(c => c.Products)
-                .FirstOrDefault(p => p.Id == id&& p.IsDeleted == false || p.IsDeleted == null);
+                .FirstOrDefault(p => p.Id == id&& (p.IsDeleted == false || p.IsDeleted == null));
             if (product==null)
             {
                 return NotFound();
             }
-            ProductReturnDto productReturnDto = new ProductReturnDto()
+            var productReturnDto = new ProductReturnDto()
             {
-                Name = product.Name,
-                Description = product.Description,
-                SalePrice = product.SalePrice,
-                CostPrice = product.CostPrice,
-                CreationDate = product.CreationDate,
+                Name = product?.Name,
+                Description = product?.Description,
+                SalePrice = product?.SalePrice,
+                CostPrice = product?.CostPrice,
+                CreationDate = product?.CreationDate,
                 Category = new categoryInProductReturnDto
                 {
-                    Name = product.Category.Name,
-                    Description = product.Category.Description,
-                    ImageUrl = product.Category.ImagUrl,
-                    ProductCount = product.Category.Products.Count()
+                    Name = product.Category?.Name,
+                    Description = product.Category?.Description,
+                    ImageUrl = product.Category?.ImagUrl,
+                    ProductCount = product.Category?.Products.Count()??0
                 }
             };
             return StatusCode(200, productReturnDto);
@@ -55,7 +55,10 @@ namespace WebApplication1.Controllers
 
             int ourTake = take ?? 2;
 
-            var query = _appDbContext.Products.Where(p => p.IsDeleted==false || p.IsDeleted == null);
+            var query = _appDbContext.Products
+                .Include(p => p.Category)
+                .ThenInclude(c=> c.Products)
+                .Where(p => p.IsDeleted==false || p.IsDeleted == null);
             if (!string.IsNullOrEmpty(search))
             {
                 query.Where(p => p.Name.ToLower().Contains(search.ToLower())).Take(ourTake);
@@ -66,11 +69,18 @@ namespace WebApplication1.Controllers
                 ProductListItemDto itemDto = new ProductListItemDto()
                 {
                     Name = item.Name,
-                    Description = item.Description,
-                    SalePrice = item.SalePrice,
-                    CostPrice = item.CostPrice,
-                    CreationDate = item.CreationDate,
-                    ModifiedDate = item.ModifiedDate,
+                    Description = item?.Description,
+                    SalePrice = item?.SalePrice,
+                    CostPrice = item?.CostPrice,
+                    CreationDate = item?.CreationDate,
+                    ModifiedDate = item?.ModifiedDate,
+                    Category = new categoryInProductReturnDto()
+                    {
+                        Name = item.Category?.Name,
+                        Description = item.Category?.Description,
+                        ImageUrl = item.Category?.ImagUrl,
+                        ProductCount = item.Category?.Products.Count()?? 0
+                    }
                 };
                 listProducts.Add(itemDto);
             }
