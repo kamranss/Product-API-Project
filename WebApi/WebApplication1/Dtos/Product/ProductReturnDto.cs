@@ -9,6 +9,7 @@ namespace WebApplication1.Dtos.Product
         public double? SalePrice { get; set; }
         public double? CostPrice { get; set; }
         public DateTime? CreationDate { get; set; }
+        public double? Profit { get; set; }
         public categoryInProductReturnDto? Category { get; set; }
 
 

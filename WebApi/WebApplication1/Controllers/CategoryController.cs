@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebApplication1.DAL;
 using WebApplication1.Dtos.Category;
 using WebApplication1.Helper.FileExten;
@@ -27,7 +28,9 @@ namespace WebApplication1.Controllers
         [HttpGet]
         public IActionResult GetCategory(int? id)
         {
-           var category = _appDbContext.Categories.FirstOrDefault(c => c.Id == id);
+           var category = _appDbContext.Categories
+                .Include(c => c.Products)
+                .FirstOrDefault(c => c.Id == id);
        
             if (category == null) { return NotFound(); }
 
@@ -35,6 +38,7 @@ namespace WebApplication1.Controllers
             {
                 Name = category.Name,
                 Description = category.Description,
+                ProductCount = category?.Products.Count() ?? 0
 
             };
             return Ok(categoryreturnDto);
