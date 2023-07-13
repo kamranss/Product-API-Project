@@ -3,5 +3,6 @@
     public class UserReturnDto
     {
         public int Age { get; set; }
+        public string FullName { get; set; }
     }
 }

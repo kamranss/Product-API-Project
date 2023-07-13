@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using WebApplication1.Dtos.Category;
 using WebApplication1.Dtos.Product;
+using WebApplication1.Dtos.User;
+using WebApplication1.Extension;
 using WebApplication1.Models;
 using static WebApplication1.Dtos.Product.ProductReturnDto;
 
@@ -21,7 +23,10 @@ namespace WebApplication1.Profiles
 
             CreateMap<Product, ProductReturnDto>()
                 .ForMember(ds => ds.Profit, map => map.MapFrom(p => p.SalePrice - p.CostPrice));
-                // if two objects having property with same name but types are different the automapper will provide missingType error for client
+            // if two objects having property with same name but types are different the automapper will provide missingType error for client
+
+            CreateMap<AppUser, UserReturnDto>()
+                .ForMember(ds => ds.Age, map => map.MapFrom(u => u.BirthDay.BirthdayToAge())); // using extenion method to find age of user
            
         }
     }

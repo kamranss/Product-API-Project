@@ -68,3 +68,4 @@ C:\Users\user\Desktop\BackEnd\WebApi\WebApi\WebApplication1\obj\Debug\net6.0\ref
 C:\Users\user\Desktop\BackEnd\WebApi\WebApi\WebApplication1\bin\Debug\net6.0\WebApplication1.staticwebassets.runtime.json
 C:\Users\user\Desktop\BackEnd\WebApi\WebApi\WebApplication1\bin\Debug\net6.0\AutoMapper.dll
 C:\Users\user\Desktop\BackEnd\WebApi\WebApi\WebApplication1\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\user\Desktop\BackEnd\WebApi\WebApi\WebApplication1\bin\Debug\net6.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll

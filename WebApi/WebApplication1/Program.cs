@@ -1,7 +1,8 @@
-using FluentValidation.AspNetCore;
+
 using Microsoft.EntityFrameworkCore;
+using WebApplication1;
 using WebApplication1.DAL;
-using WebApplication1.Dtos.Product;
+
 using WebApplication1.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,14 +10,8 @@ var config = builder.Configuration;
 
 // Add services to the container.
 
+builder.Services.ServiceRegister();
 
-//setting up validation if we include one there is no need to include other validation classes
-// this comes with fluentApi package
-builder.Services.AddControllers().AddFluentValidation(option =>
-{
-    option.RegisterValidatorsFromAssemblyContaining<ProductCreateDtoValiidator>();
-    option.RegisterValidatorsFromAssemblyContaining<ProductUpdateDtoValiidator>();
-});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
