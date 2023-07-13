@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.DAL;
@@ -13,10 +14,12 @@ namespace WebApplication1.Controllers
     public class ProductController : BaseController
     {
         private readonly AppDbContext _appDbContext;
+        private readonly IMapper _mapper; // mapping objects to dto or reverse
 
-        public ProductController(AppDbContext appDbContext)
+        public ProductController(AppDbContext appDbContext, IMapper mapper)
         {
             _appDbContext = appDbContext;
+            _mapper = mapper;
         }
 
 
@@ -32,21 +35,22 @@ namespace WebApplication1.Controllers
             {
                 return NotFound();
             }
-            var productReturnDto = new ProductReturnDto()
-            {
-                Name = product?.Name,
-                Description = product?.Description,
-                SalePrice = product?.SalePrice,
-                CostPrice = product?.CostPrice,
-                CreationDate = product?.CreationDate,
-                Category = new categoryInProductReturnDto
-                {
-                    Name = product.Category?.Name,
-                    Description = product.Category?.Description,
-                    ImageUrl = product.Category?.ImagUrl,
-                    ProductCount = product.Category?.Products.Count()??0
-                }
-            };
+            var productReturnDto = _mapper.Map<ProductReturnDto>(product);
+            //var productReturnDto = new ProductReturnDto()
+            //{
+            //    Name = product?.Name,
+            //    Description = product?.Description,
+            //    SalePrice = product?.SalePrice,
+            //    CostPrice = product?.CostPrice,
+            //    CreationDate = product?.CreationDate,
+            //    Category = new categoryInProductReturnDto
+            //    {
+            //        Name = product.Category?.Name,
+            //        Description = product.Category?.Description,
+            //        ImageUrl = product.Category?.ImagUrl,
+            //        ProductCount = product.Category?.Products.Count()??0
+            //    }
+            //};
             return StatusCode(200, productReturnDto);
         }
         [HttpGet("products")]

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using WebApplication1.Dtos.Category;
 using WebApplication1.Helper.FileExten;
 using WebApplication1.Migrations;
 using WebApplication1.Models;
+using WebApplication1.Profiles;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace WebApplication1.Controllers
@@ -17,11 +19,13 @@ namespace WebApplication1.Controllers
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly AppDbContext _appDbContext;
+        private readonly IMapper _mapProfile;
 
-        public CategoryController(AppDbContext appDbContext, IWebHostEnvironment webHostEnvironment)
+        public CategoryController(AppDbContext appDbContext, IWebHostEnvironment webHostEnvironment, IMapper mapProfile)
         {
             _appDbContext = appDbContext;
             _webHostEnvironment = webHostEnvironment;
+            _mapProfile = mapProfile;
         }
 
         [Route("categorybyid/{id}")]
@@ -34,13 +38,20 @@ namespace WebApplication1.Controllers
        
             if (category == null) { return NotFound(); }
 
-            CategoryReturnDto categoryreturnDto = new CategoryReturnDto()
-            {
-                Name = category.Name,
-                Description = category.Description,
-                ProductCount = category?.Products.Count() ?? 0
+            var categoryreturnDto = _mapProfile.Map<CategoryReturnDto>(category); // mapping model to Dto
+            //if (category.ImagUrl != null) 
+            //{
+            //    categoryreturnDto.ImageUrl = "https://localhost:7268/" + category.ImagUrl;
+            //} \
+            //categoryreturnDto.ImageUrl = category.ImagUrl != null ? $"https://localhost:7268/{category.ImagUrl}" : null;
 
-            };
+            //CategoryReturnDto categoryreturnDto = new CategoryReturnDto()
+            //{
+            //    Name = category.Name,
+            //    Description = category.Description,
+            //    ProductCount = category?.Products.Count() ?? 0
+
+            //};
             return Ok(categoryreturnDto);
         }
 
@@ -66,17 +77,17 @@ namespace WebApplication1.Controllers
             {
                 return Conflict($"Category with the same {existCategory.Name} name already exist");
             }
+            string imageUrl = category.Image.SaveFile(_webHostEnvironment, "images/category");
             Category newCategory = new Category()
             {
                 Name = category.Name,
                 Description = category.Description,
-                CreationDate = DateTime.Now
+                CreationDate = DateTime.Now,
+                ImagUrl = imageUrl, 
             };
             //_appDbContext.Categories.Add(new Category { Name = category.Name, Description = category.Description}) ; // another approach
 
-            newCategory.ImagUrl = category.Image.SaveFile(_webHostEnvironment, "images/category");
-       
-           
+
             _appDbContext.Categories.Add(newCategory);
             _appDbContext.SaveChanges();
             return StatusCode(201, category);

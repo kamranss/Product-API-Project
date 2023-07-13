@@ -2,6 +2,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.DAL;
 using WebApplication1.Dtos.Product;
+using WebApplication1.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -24,7 +25,11 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 {
     option.UseSqlServer(config.GetConnectionString("DefaultConnection"));
 });
-    
+
+builder.Services.AddAutoMapper(option =>
+{
+    option.AddProfile<MapProfile>();
+}); // Config for Automapper package
 
 var app = builder.Build();
 
