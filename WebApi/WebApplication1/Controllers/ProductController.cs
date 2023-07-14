@@ -63,6 +63,7 @@ namespace WebApplication1.Controllers
                 .Include(p => p.Category)
                 .ThenInclude(c=> c.Products)
                 .Where(p => p.IsDeleted==false || p.IsDeleted == null);
+
             if (!string.IsNullOrEmpty(search))
             {
                 query.Where(p => p.Name.ToLower().Contains(search.ToLower())).Take(ourTake);
