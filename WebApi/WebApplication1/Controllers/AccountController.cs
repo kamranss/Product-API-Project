@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using WebApplication1.Dtos.User;
 using WebApplication1.Helper.Roles;
 using WebApplication1.Models;
@@ -15,11 +19,13 @@ namespace WebApplication1.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<IdentityRole> roleManager)
+        private readonly IConfiguration _config; // we will use this to read appsettings file
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<IdentityRole> roleManager, IConfiguration config)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
+            _config = config;
         }
 
 
@@ -60,6 +66,9 @@ namespace WebApplication1.Controllers
             return StatusCode(201);
         }
 
+
+        [Route("login")]
+        [HttpPost]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
             AppUser user = await _userManager.FindByEmailAsync(loginDto.UserNameOrEmail);
@@ -71,11 +80,31 @@ namespace WebApplication1.Controllers
                     return NotFound();
                 }
             }
-            //var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
-            //if (!result.Succeeded)
-            //{
-            //    return BadRequest(result.Errors);
-            //}
+            var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
+            if (!result)
+            {
+                return NotFound();
+            }
+            // generate token 
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenKey = Encoding.UTF8.GetBytes(_config["JWT:Key"]);  // convering string key to bytes
+            var claimList = new List<Claim>(); // claim data will be stored within the claim
+            claimList.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));  // instead of ClaimTypes.NameIdentifier we could just write id
+            claimList.Add(new Claim("username", ""));
+            foreach (var role in userRoles)
+            {
+                claimList.Add(new Claim("role", role));
+            }
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claimList),
+                Expires = DateTime.UtcNow.AddMinutes(10),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return new Tokens { Token = tokenHandler.WriteToken(token) };
+            return Ok(new { token = "", message = "succesfull" });
 
         }
     }
