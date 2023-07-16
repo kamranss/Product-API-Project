@@ -57,7 +57,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet("products")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public IActionResult GetAll(string? search, int? take=2)
         {
 
