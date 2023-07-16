@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.DAL;
 using WebApplication1.Dtos.Product;
+using WebApplication1.Helper.Roles;
 using WebApplication1.Migrations;
 using WebApplication1.Models;
 using static WebApplication1.Dtos.Product.ProductReturnDto;
@@ -53,7 +55,9 @@ namespace WebApplication1.Controllers
             //};
             return StatusCode(200, productReturnDto);
         }
+
         [HttpGet("products")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetAll(string? search, int? take=2)
         {
 

@@ -50,7 +50,11 @@ namespace WebApplication1.Controllers
             {
                 return BadRequest(result.Errors);
             }
-
+            result = await _userManager.AddToRoleAsync(user, RoleEnum.Admin.ToString());
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
             return StatusCode(201);
         }
 
@@ -91,20 +95,24 @@ namespace WebApplication1.Controllers
             var tokenKey = Encoding.UTF8.GetBytes(_config["JWT:Key"]);  // convering string key to bytes
             var claimList = new List<Claim>(); // claim data will be stored within the claim
             claimList.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));  // instead of ClaimTypes.NameIdentifier we could just write id
-            claimList.Add(new Claim("username", ""));
+            claimList.Add(new Claim("username", user.UserName));
+            claimList.Add(new Claim("email", user.Email));
             foreach (var role in userRoles)
             {
                 claimList.Add(new Claim("role", role));
             }
             var tokenDescriptor = new SecurityTokenDescriptor
             {
+                // all of the description also should be implemented within program class 
                 Subject = new ClaimsIdentity(claimList),
                 Expires = DateTime.UtcNow.AddMinutes(10),
+                Issuer = _config["JWT: Issuer"],
+                Audience = _config["JWT: Audience"],
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            return new Tokens { Token = tokenHandler.WriteToken(token) };
-            return Ok(new { token = "", message = "succesfull" });
+
+            return Ok(new { token = tokenHandler.WriteToken(token), message = "succesfull" });
 
         }
     }

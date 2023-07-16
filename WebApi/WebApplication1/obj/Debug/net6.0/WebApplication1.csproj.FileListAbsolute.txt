@@ -69,3 +69,4 @@ C:\Users\user\Desktop\BackEnd\WebApi\WebApi\WebApplication1\bin\Debug\net6.0\Web
 C:\Users\user\Desktop\BackEnd\WebApi\WebApi\WebApplication1\bin\Debug\net6.0\AutoMapper.dll
 C:\Users\user\Desktop\BackEnd\WebApi\WebApi\WebApplication1\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 C:\Users\user\Desktop\BackEnd\WebApi\WebApi\WebApplication1\bin\Debug\net6.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+C:\Users\user\Desktop\BackEnd\WebApi\WebApi\WebApplication1\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
